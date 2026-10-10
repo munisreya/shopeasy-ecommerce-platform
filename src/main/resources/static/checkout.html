@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - ShopEasy</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .checkout-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 30px; margin-top: 30px; }
+        @media (max-width: 900px) { .checkout-grid { grid-template-columns: 1fr; } }
+        .checkout-section { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        .checkout-section h2 { font-size: 18px; color: #1f2937; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .step-num { background: #4f46e5; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+        .payment-methods { display: grid; gap: 12px; }
+        .payment-option { display: flex; align-items: center; gap: 12px; padding: 16px; border: 2px solid #e5e7eb; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+        .payment-option:hover { border-color: #a5b4fc; }
+        .payment-option.selected { border-color: #4f46e5; background: #eef2ff; }
+        .payment-option input[type="radio"] { width: 20px; height: 20px; accent-color: #4f46e5; }
+        .payment-option .pm-info { flex: 1; }
+        .payment-option .pm-info strong { display: block; font-size: 15px; color: #1f2937; margin-bottom: 2px; }
+        .payment-option .pm-info span { font-size: 13px; color: #6b7280; }
+        .payment-icon { font-size: 24px; }
+        .card-form { display: none; margin-top: 20px; padding: 20px; background: #f9fafb; border-radius: 10px; }
+        .card-form.show { display: block; }
+        .card-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .order-summary { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); position: sticky; top: 100px; }
+        .order-summary h2 { font-size: 18px; color: #1f2937; margin-bottom: 20px; }
+        .summary-item-with-img { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f3f4f6; }
+        .summary-product { display: flex; align-items: center; gap: 12px; }
+        .summary-product img { width: 50px; height: 50px; object-fit: cover; border-radius: 8px; }
+        .summary-total { display: flex; justify-content: space-between; padding: 15px 0; margin-top: 10px; border-top: 2px solid #e5e7eb; font-size: 20px; font-weight: 800; color: #1f2937; }
+        .pay-btn { width: 100%; padding: 16px; font-size: 16px; font-weight: 700; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container" style="margin-top:30px;">
+        <a href="cart.html" style="display:inline-block;margin-bottom:20px;color:#4f46e5;font-weight:600;font-size:14px;">← Back to Cart</a>
+        <h1 class="section-title">Checkout</h1>
+        <div id="message" class="message"></div>
+
+        <div class="checkout-grid">
+            <div>
+                <div class="checkout-section">
+                    <h2><span class="step-num">1</span> Shipping Details</h2>
+                    <div class="form-group"><label>Full Name *</label><input type="text" id="shipName" placeholder="John Doe"></div>
+                    <div class="form-group"><label>Phone Number *</label><input type="tel" id="shipPhone" placeholder="+91 98765 43210"></div>
+                    <div class="form-group"><label>Delivery Address *</label><textarea id="shipAddress" rows="3" placeholder="House no, Street, City, State, PIN Code"></textarea></div>
+                </div>
+
+                <div class="checkout-section">
+                    <h2><span class="step-num">2</span> Payment Method</h2>
+                    <div class="payment-methods">
+                        <label class="payment-option selected" onclick="selectPayment('CARD', this)">
+                            <input type="radio" name="payment" value="CARD" checked>
+                            <span class="payment-icon">💳</span>
+                            <div class="pm-info"><strong>Credit / Debit Card</strong><span>Visa, Mastercard, RuPay</span></div>
+                        </label>
+                        <label class="payment-option" onclick="selectPayment('UPI', this)">
+                            <input type="radio" name="payment" value="UPI">
+                            <span class="payment-icon">📱</span>
+                            <div class="pm-info"><strong>UPI</strong><span>Google Pay, PhonePe, Paytm</span></div>
+                        </label>
+                        <label class="payment-option" onclick="selectPayment('COD', this)">
+                            <input type="radio" name="payment" value="COD">
+                            <span class="payment-icon">💵</span>
+                            <div class="pm-info"><strong>Cash on Delivery</strong><span>Pay when delivered</span></div>
+                        </label>
+                    </div>
+                    <div id="cardForm" class="card-form show">
+                        <div class="form-group"><label>Card Number</label><input type="text" id="cardNumber" placeholder="4242 4242 4242 4242" maxlength="19"></div>
+                        <div class="form-group"><label>Cardholder Name</label><input type="text" id="cardName" placeholder="John Doe"></div>
+                        <div class="card-row">
+                            <div class="form-group"><label>Expiry</label><input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5"></div>
+                            <div class="form-group"><label>CVV</label><input type="text" id="cardCvv" placeholder="123" maxlength="4"></div>
+                        </div>
+                        <p style="font-size:12px;color:#9ca3af;margin-top:10px;">ⓘ Demo payment. No real money will be charged.</p>
+                    </div>
+                    <div id="upiForm" class="card-form">
+                        <div class="form-group"><label>UPI ID</label><input type="text" id="upiId" placeholder="yourname@upi"></div>
+                        <p style="font-size:12px;color:#9ca3af;margin-top:10px;">ⓘ Demo only. Use any UPI ID.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="order-summary">
+                    <h2>📋 Order Summary</h2>
+                    <div id="summaryItems"><p style="color:#9ca3af;font-size:14px;">Loading...</p></div>
+                    <button class="btn btn-success pay-btn" onclick="handlePlaceOrder()">🔒 Place Order</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        if (!requireLogin()) throw new Error('Not logged in');
+        const msg = document.getElementById('message');
+        let currentPayment = 'CARD';
+
+        async function loadSummary() {
+            try {
+                const cart = await getCart();
+                if (!cart.items || cart.items.length === 0) {
+                    document.getElementById('summaryItems').innerHTML = `<p style="color:#6b7280;font-size:14px;">Your cart is empty.</p>`;
+                    return;
+                }
+                let total = 0;
+                const rows = cart.items.map(item => {
+                    const sub = item.product.price * item.quantity;
+                    total += sub;
+                    const img = item.product.imageUrl || 'https://via.placeholder.com/60?text=?';
+                    return `
+                        <div class="summary-item-with-img">
+                            <div class="summary-product">
+                                <img src="${img}" alt="${item.product.name}" onerror="this.onerror=null;this.src='https://placehold.co/50x50/4f46e5/ffffff?text=?'">
+                                <div>
+                                    <div style="font-weight:600;color:#1f2937;">${item.product.name}</div>
+                                    <div style="font-size:12px;color:#6b7280;">Qty: ${item.quantity}</div>
+                                </div>
+                            </div>
+                            <span style="font-weight:600;">${formatPrice(sub)}</span>
+                        </div>
+                    `;
+                }).join('');
+                document.getElementById('summaryItems').innerHTML = rows + `<div class="summary-total"><span>Total</span><span>${formatPrice(total)}</span></div>`;
+            } catch (err) {
+                document.getElementById('summaryItems').innerHTML = `<p style="color:#ef4444;">Error: ${err.message}</p>`;
+            }
+        }
+
+        function selectPayment(method, el) {
+            currentPayment = method;
+            document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+            document.getElementById('cardForm').classList.remove('show');
+            document.getElementById('upiForm').classList.remove('show');
+            if (method === 'CARD') document.getElementById('cardForm').classList.add('show');
+            if (method === 'UPI') document.getElementById('upiForm').classList.add('show');
+        }
+
+        document.getElementById('cardNumber').addEventListener('input', (e) => {
+            let v = e.target.value.replace(/\s/g, '');
+            e.target.value = v.match(/.{1,4}/g)?.join(' ') || v;
+        });
+
+        document.getElementById('cardExpiry').addEventListener('input', (e) => {
+            let v = e.target.value.replace(/\D/g, '');
+            if (v.length >= 3) v = v.slice(0, 2) + '/' + v.slice(2, 4);
+            e.target.value = v;
+        });
+
+        async function handlePlaceOrder() {
+            const name = document.getElementById('shipName').value.trim();
+            const phone = document.getElementById('shipPhone').value.trim();
+            const address = document.getElementById('shipAddress').value.trim();
+            if (!name || !phone || !address) {
+                msg.className = 'message error';
+                msg.textContent = 'Please fill in all shipping details.';
+                window.scrollTo(0, 0);
+                return;
+            }
+            if (currentPayment === 'CARD') {
+                const cn = document.getElementById('cardNumber').value.trim();
+                const cn2 = document.getElementById('cardName').value.trim();
+                const exp = document.getElementById('cardExpiry').value.trim();
+                const cvv = document.getElementById('cardCvv').value.trim();
+                if (!cn || !cn2 || !exp || !cvv) {
+                    msg.className = 'message error';
+                    msg.textContent = 'Please fill in all card details.';
+                    window.scrollTo(0, 0);
+                    return;
+                }
+            }
+            if (currentPayment === 'UPI') {
+                const upi = document.getElementById('upiId').value.trim();
+                if (!upi) {
+                    msg.className = 'message error';
+                    msg.textContent = 'Please enter a UPI ID.';
+                    window.scrollTo(0, 0);
+                    return;
+                }
+            }
+            try {
+                const order = await placeOrder({
+                    shippingName: name,
+                    shippingPhone: phone,
+                    shippingAddress: address,
+                    paymentMethod: currentPayment
+                });
+                if (currentPayment !== 'COD') {
+                    await payOrder(order.id);
+                }
+                msg.className = 'message success';
+                msg.textContent = '✓ Order placed successfully! Redirecting...';
+                updateCartBadge();
+                setTimeout(() => { window.location.href = 'orders.html'; }, 1200);
+            } catch (err) {
+                msg.className = 'message error';
+                msg.textContent = err.message || 'Failed to place order.';
+                window.scrollTo(0, 0);
+            }
+        }
+
+        loadSummary();
+    </script>
+</body>
+</html>

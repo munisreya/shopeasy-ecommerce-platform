@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Cart - ShopEasy</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container" style="margin-top:30px;">
+        <h1 class="section-title">🛒 My Shopping Cart</h1>
+        <div id="message" class="message"></div>
+        <div id="cartContent" class="table-container"><p>Loading cart...</p></div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        if (!requireLogin()) throw new Error('Not logged in');
+        const cartContent = document.getElementById('cartContent');
+        const msg = document.getElementById('message');
+
+        async function loadCart() {
+            try {
+                const cart = await getCart();
+                renderCart(cart);
+            } catch (err) {
+                cartContent.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><h3>Error: ${err.message}</h3></div>`;
+            }
+        }
+
+        function renderCart(cart) {
+            if (!cart.items || cart.items.length === 0) {
+                cartContent.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">🛒</div>
+                        <h3>Your cart is empty</h3>
+                        <p>Add some products first!</p>
+                        <a href="index.html" class="btn">Browse Products</a>
+                    </div>`;
+                return;
+            }
+            let total = 0;
+            const rows = cart.items.map(item => {
+                const sub = item.product.price * item.quantity;
+                total += sub;
+                const img = item.product.imageUrl || 'https://via.placeholder.com/60?text=?';
+                const safeName = item.product.name.replace(/'/g, "\\'");
+                return `
+                    <tr>
+                        <td>
+                            <div class="table-product">
+                                <img src="${img}" alt="${item.product.name}" onerror="this.onerror=null;this.src='https://placehold.co/60x60/4f46e5/ffffff?text=?'">
+                                <span>${item.product.name}</span>
+                            </div>
+                        </td>
+                        <td>${formatPrice(item.product.price)}</td>
+                        <td>
+                            <div class="qty-controls">
+                                <button onclick="updateQty(${item.product.id}, ${item.quantity - 1})">−</button>
+                                <span>${item.quantity}</span>
+                                <button onclick="updateQty(${item.product.id}, ${item.quantity + 1})">+</button>
+                            </div>
+                        </td>
+                        <td>${formatPrice(sub)}</td>
+                        <td>
+                            <button class="btn btn-danger btn-small" onclick="handleRemove(${item.product.id})">Remove</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            cartContent.innerHTML = `
+                <table>
+                    <thead>
+                        <tr><th>Product</th><th>Price</th><th>Quantity</th><th>Subtotal</th><th>Action</th></tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+                <div class="cart-total">Total: ${formatPrice(total)}</div>
+                <div style="text-align:right; margin-top:20px;">
+                    <button class="btn btn-success btn-large" onclick="window.location.href='checkout.html'">Proceed to Checkout →</button>
+                </div>
+            `;
+        }
+
+        async function updateQty(productId, newQty) {
+            try {
+                if (newQty < 1) {
+                    await removeFromCart(productId);
+                } else {
+                    await removeFromCart(productId);
+                    await addToCart(productId, newQty);
+                }
+                loadCart();
+                updateCartBadge();
+            } catch (err) {
+                msg.className = 'message error';
+                msg.textContent = err.message;
+            }
+        }
+
+        async function handleRemove(productId) {
+            try {
+                await removeFromCart(productId);
+                msg.className = 'message success';
+                msg.textContent = 'Item removed.';
+                setTimeout(() => msg.className = 'message', 2000);
+                loadCart();
+                updateCartBadge();
+            } catch (err) {
+                msg.className = 'message error';
+                msg.textContent = err.message;
+            }
+        }
+
+        loadCart();
+    </script>
+</body>
+</html>
