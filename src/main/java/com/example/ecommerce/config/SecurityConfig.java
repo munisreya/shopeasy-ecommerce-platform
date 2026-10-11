@@ -25,11 +25,11 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                // Static frontend files — allow public access
+                // Static frontend files — public access
                 .requestMatchers(
                     "/", "/index.html", "/login.html", "/register.html",
-                    "/cart.html", "/orders.html", "/products.html",
-                    "/checkout.html", "/product.html", "/payment.html",
+                    "/cart.html", "/orders.html", "/product.html",
+                    "/checkout.html", "/payment.html", "/products.html",
                     "/css/**", "/js/**", "/images/**", "/*.ico"
                 ).permitAll()
                 // Public API endpoints
