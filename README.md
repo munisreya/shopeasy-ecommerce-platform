@@ -14,12 +14,12 @@ ShopEasy is a complete e-commerce platform where users can browse products acros
 
 | Layer | Technologies |
 |-------|--------------|
-| Backend | Java 17, Spring Boot 4.1.1, Spring Security, Spring Data JPA |
-| Database | MySQL 8 (10 normalized tables) |
-| Auth | JWT + BCrypt |
-| Frontend | HTML5, CSS3, Vanilla JavaScript |
-| API Docs | Swagger / OpenAPI 3 |
-| Build | Maven |
+| **Backend** | Java 17, Spring Boot 4.1.1, Spring Security, Spring Data JPA |
+| **Database** | MySQL 8 (10 normalized tables) |
+| **Auth** | JWT + BCrypt |
+| **Frontend** | HTML5, CSS3, Vanilla JavaScript |
+| **API Docs** | Swagger / OpenAPI 3 |
+| **Build** | Maven |
 
 ## ✨ Features
 
@@ -35,12 +35,7 @@ ShopEasy is a complete e-commerce platform where users can browse products acros
 
 ## 🏗️ Architecture
 
-Frontend (HTML/CSS/JS)
-        ↓  Fetch API + JWT
-Spring Boot REST API
-   Controller → Service → Repository
-        ↓  JPA / Hibernate
-MySQL Database (10 tables)
+Frontend (HTML/CSS/JS) → Fetch API + JWT → Spring Boot REST API → Controller → Service → Repository → JPA/Hibernate → MySQL Database (10 tables)
 
 ## 📁 Project Structure
 
@@ -88,17 +83,25 @@ CREATE DATABASE ecommerce_db;
 spring.datasource.url=jdbc:mysql://localhost:3306/ecommerce_db
 spring.datasource.username=root
 spring.datasource.password=YOUR_PASSWORD
-jwt.secret=your-very-long-secret-key-min-32-chars
+jwt.secret=your-very-long-secret-key-min-32-characters
 jwt.expiration=86400000
 
 ### 4. Run the application
 
 ./mvnw spring-boot:run
 
-### 5. Open in browser
+### 5. Open in your browser
 
-Website:        http://localhost:8080/index.html
-Swagger Docs:   http://localhost:8080/swagger-ui.html
+| Page | Link |
+|------|------|
+| 🏠 Homepage | http://localhost:8080/index.html |
+| 🔐 Login | http://localhost:8080/login.html |
+| 📝 Register | http://localhost:8080/register.html |
+| 🛒 Cart | http://localhost:8080/cart.html |
+| 💳 Checkout | http://localhost:8080/checkout.html |
+| 📦 Orders | http://localhost:8080/orders.html |
+| 📱 Product Detail | http://localhost:8080/product.html?id=1 |
+| 📚 Swagger Docs | http://localhost:8080/swagger-ui.html |
 
 ## 🔒 Security Highlights
 
@@ -109,12 +112,12 @@ Swagger Docs:   http://localhost:8080/swagger-ui.html
 
 ## 🧪 Testing
 
-Thoroughly tested using Postman covering:
+The API was thoroughly tested using Postman covering:
 
 - User registration and login
 - JWT token validation
 - Role-based access control
-- Cart operations (add, update, remove)
+- Cart operations
 - Order placement and status updates
 
 ## 👨‍💻 Author
