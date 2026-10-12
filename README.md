@@ -5,6 +5,7 @@ A production-ready full-stack e-commerce web application built with **Spring Boo
 ![Java](https://img.shields.io/badge/Java-17-orange)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.1-brightgreen)
 ![MySQL](https://img.shields.io/badge/MySQL-8.0-blue)
+🌐 **Live Demo:** https://shopeasy-ecommerce-platform-production.up.railway.app
 
 ## 📖 Overview
 
